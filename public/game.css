@@ -1,0 +1,56 @@
+html, body {
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    z-index: -1;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: navy;
+    margin: 0;
+    z-index: 0;
+}
+
+#top {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    background-color: aliceblue;
+    width: 100%;
+    height: 15%;
+    text-align: center;
+    font-size: large;
+    opacity: 0.8;
+}
+
+#bottom {
+    position: absolute;
+    z-index: 10;
+    top: 85%;
+    background-color: aliceblue;
+    width: 100%;
+    height: 15%;
+    text-align: center;
+    font-size: large;
+    opacity: 0.8;
+}
+
+#bot_right {
+    float: right;
+    width: 75%;
+    height: 100%;
+    background-color: red;
+}
+
+#bot_left {
+    float: left;
+    width: 25%;
+    height: 100%;
+    background-color: green;
+}
