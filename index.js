@@ -7,7 +7,6 @@ const app = express()
 app.use(express.static('public'))
 app.use(bodyParser.json())
 app.post('/createUser', (req, res) => {
-  console.log(req.body)
   store
     .createUser({
       username: req.body.username,
@@ -43,7 +42,6 @@ app.post('/login', (req, res) => {
     })
 })
 app.post('/addBase', (req, res) => {
-  console.log(req.body);
   initialize
     .createOutpost(req.body)
     .then(() => res.sendStatus(200))
@@ -58,7 +56,11 @@ app.post('/addBase', (req, res) => {
 // })
 
 app.get('/getBase3', (req, res) => {
-  var temp = req.headers.cookie.split(';');
+  // console.log(req.headers.cookie)
+  if (req.headers.cookie != null)
+    var temp = req.headers.cookie.split(';');
+  else
+    var temp = []
   var name = "ID="
   var cookie = "";
   for (var i = 0; i < temp.length; i++) {
@@ -76,12 +78,20 @@ app.get('/getBase3', (req, res) => {
       user = currentUsers[i].username;
     }
   }
-  console.log(user);
   //console.log(req)
   request
     .askOutposts3(user)
     .then((data) => {
-      res.status(200).send({ outposts: data });
+      var flag = false;
+      for (var i = 0; i < currentUsers.length; i++) {
+        // console.log(currentUsers[i])
+        if (currentUsers[i].cookie == cookie)
+          flag = true
+      }
+      if (flag)
+        res.status(200).send({ outposts: data });
+      else
+        res.sendStatus(401)
     })
 })
 var currentUsers = [];

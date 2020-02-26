@@ -6,8 +6,9 @@ exports.up = function (knex) {
         t.float('y').notNullable()
         t.string('owner').defaultTo('none')
         t.integer('troops').defaultTo(0)
-        t.string('name').notNullable();
+        t.string('name').notNullable()
         t.timestamps(false, true)
+        t.string('color')
     })
 };
 
