@@ -1,9 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const store = require('./store')
-const initialize = require('./initialize')
-const request = require('./request')
+const store = require('./resources/store')
+const initialize = require('./resources/initialize')
+const request = require('./resources/request')
 const app = express()
+
 app.use(express.static('public'))
 app.use(bodyParser.json())
 app.post('/createUser', (req, res) => {
@@ -33,7 +34,9 @@ app.post('/login', (req, res) => {
           }
         }
         if (!flag) {
-          currentUsers.push({ username: req.body.username, cookie: temp })
+          var temp = Date();
+          console.log(temp)
+          currentUsers.push({ username: req.body.username, cookie: temp,time: temp })
         }
       }
       else {
@@ -95,8 +98,6 @@ app.get('/getBase3', (req, res) => {
     })
 })
 var currentUsers = [];
-
-
 
 app.listen(process.env.PORT || 7555, () => {
   console.log('Server running on http://localhost:7555')
