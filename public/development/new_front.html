@@ -1,0 +1,118 @@
+<html>
+
+<head>
+    <style>
+        html {
+            background-color: whitesmoke;
+        }
+
+        #canvas {
+            border-width: 2px;
+            border-color: black;
+            width: 400px;
+            height: 400px;
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" height="400" width="400">
+        testing
+    </canvas>
+    <div class="slidecontainer">
+        <input type="range" min="-400" max="400" value="50" class="slider" id="myRange">
+    </div>
+    <div id="output">
+
+    </div>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d")
+        var drawing = [];
+        var MouseEvent;
+        var slide;
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("output")
+        var canvas_max_width = 400;
+        var canvas_max_height = 400;
+        var body_width = 500;
+        var body_height = 500;
+        var shift = 0;
+        document.addEventListener('keydown',(e)=>{
+            if(e.key == "ArrowRight"){
+                shift+= 25
+            }else if(e.key=="ArrowLeft"){
+                shift -= 25;
+            }
+            shift %= body_width;
+        })
+        slider.oninput = function () {
+            output.innerHTML = this.value;
+            slide = Number(this.value);
+        }
+        canvas.addEventListener("mousemove", (e) => {
+            MouseEvent = e;
+        })
+
+
+        function generateTiles() {
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 10; j++) {
+                    drawing.push(new Tile(i * 50, j * 50, "#" + i + "0" + j + "000"))
+                }
+            }
+        }
+        function drawAll() {
+            context.clearRect(0, 0, canvas.height, canvas.width);
+            for (var i = 0; i < drawing.length; i++) {
+                drawing[i].draw(shift+1000, MouseEvent.offsetY - 200);
+            }
+
+            requestAnimationFrame(() => {
+                drawAll();
+            })
+        }
+        class Tile {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+            }
+            draw(relX, relY) {
+                var X = this.x + relX;
+                var Y = this.y;
+
+                if(X < 1000){
+                    X += body_width
+                }
+                // if (X > 0) {
+                //     while (X > body_width)
+                //         X -= canvas_max_width
+                // } else {
+                //     while (X < 0)
+                //         X += body_width
+                // }
+                context.fillStyle = this.color;
+                context.fillRect(X-1000, Y, 50, 50);
+            }
+        }
+        class Grid {
+            constructor(width, height, tileWidth, tileHeight) {
+                this.tiles = [];
+                for (var i = 0; i < width; i++) {
+                    for (var j = 0; j < height; j++) {
+                        drawing.push(new Tile(i * tileWidth, j * tileHeight, "#" + i + "0" + j + "000"))
+                    }
+                }
+                this.tileWidth = tileWidth;
+                this.tileHeight = tileHeight;
+            }
+        }
+        generateTiles();
+        drawAll();
+
+    </script>
+</body>
+
+</html>

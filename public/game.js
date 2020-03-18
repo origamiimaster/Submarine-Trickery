@@ -5,7 +5,7 @@ var leftDown, rightDown, scrolling;
 var toDraw = [];
 var outpost_width = 50;
 var outpost_height = 50;
-
+var totalWidth, totalHeight;
 
 function init() {
     buildOutposts(toDraw, 3);
@@ -56,47 +56,82 @@ function init() {
     }, { passive: false })
     draw()
 }
+
+
+//TODO: replace 1200 with a expression for the total size of the system ***COMPLETE***
+//      create all the Y axis versions of these statements.
+
+function getAvgWidth(array) {
+    var maxX = 0;
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].x > maxX) {
+            maxX = array[i].x;
+        }
+    }
+    var avgDist = maxX / (array.length - 1);
+    return maxX + avgDist;
+}
+function getAvgHeight(array) {
+    var maxY = 0;
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].y > maxY) {
+            maxY = array[i].y;
+        }
+    }
+    var avgDist = maxY / (array.length - 1);
+    return maxY + avgDist;
+}
+
+
+function getAvgHeightAndWidth(array) {
+    // Assuming grid like distribution I guess
+    var distances = [];
+    for (var i = 0; i < array.length; i++) {
+        for (var j = i + 1; j < array.length; j++) {
+            distances.push((Math.sqrt((array[i].x - array[j].x)*(array[i].x - array[j].x) + (array[i].y - array[j].y)*(array[i].y - array[j].y))))
+        }
+    }
+    var temp = 0;
+    for (var i = 0; i < distances.length; i++) {
+        temp += distances[i];
+    }
+    //temp /= distances.length;
+    //temp /= array.length
+    return temp;
+}
+
+
 function draw() {
+    totalWidth = getAvgWidth(toDraw);
+    totalHeight = getAvgHeight(toDraw);
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     for (var i = 0; i < toDraw.length; i++) {
-        ctx.fillStyle = toDraw[i].color
-
-
-        //???????????????????????????????????
-        // var xDraw = toDraw[i].x, yDraw = toDraw[i].y;
-        // if (relX >= 0) {
-        //     xDraw = (xDraw + relX) % canvas.width;
-        // } else {
-        //     xDraw = (xDraw + relX) % canvas.width + canvas.width;
-        // }
-        // if (relY >= 0) {
-        //     yDraw = (yDraw + relY) % canvas.height;
-        // } else {
-        //     yDraw = (yDraw + relY) % canvas.height + canvas.height;
-        // }
-        // ctx.fillRect((xDraw) % canvas.width - outpost_width, yDraw % canvas.height - outpost_height, toDraw[i].w, toDraw[i].h);
-        //???????????????????????????????????
-
-
-        //This is almost right, just gotta make it so the entire length of the x 
-        //(ie the gaps between the outposts plus the buffer) is wrapping but not displaying all the way.  
-        var X = toDraw[i].x + relX % (canvas.width - 50)
-
-        if (X < 0) {
-            X += canvas.width - 50;
+        var X = toDraw[i].x + relX;
+        if (relX < 0) {
+            while (X < 0) {
+                X += totalWidth;
+            }
+        } else if (relX > 0) {
+            while (X > canvas.width) {
+                X -= totalWidth;
+            }
         }
-
-
-
-
-
-        var Y = toDraw[i].y//+relY;
-        ctx.fillRect(X % (canvas.width - 50), Y, outpost_width, outpost_height)
-
+        var Y = toDraw[i].y + relY;
+        if (relY < 0) {
+            while (Y < 0) {
+                Y += totalHeight;
+            }
+        }
+        if (relY > 0) {
+            while (Y < 0) {
+                Y -= totalHeight;
+            }
+        }
+        ctx.fillStyle = toDraw[i].color;
+        ctx.fillRect(X, Y, outpost_width, outpost_height)
     }
     window.requestAnimationFrame(draw)
 }
-
 
 
 
@@ -111,28 +146,19 @@ function buildOutposts(array, numbOfPlayers) {
 
 function buildLine() {
     toDraw = [];
-    for (var i = 0; i < 4; i++) {
-        toDraw.push({ x: i * 200, y: 300, w: outpost_width, h: outpost_height, color: "#" + (2 * i) + "00000" })
-
+    for (var i = 0; i < 8; i++) {
+        toDraw.push({ x: i * 200, y: 300, w: outpost_width, h: outpost_height, color: "#" + (i) + "00000" })
     }
 }
-//Later change it to use theta plus a radius ie polar coordinates
 
 
-
-/*
-//Not Working
-function fixOutposts(array) {
-    for (var i = 0; i < array.length; i++) {
-        for (var j = i + 1; j < array.length; j++) {
-            if (distance(array[i].x, array[j].x, array[i].y, array[j].y) < 100000 || distance(array[i].x, array[j].x, array[i].y, array[j].y) > 200) {
-                array.splice(j, 1);
-            }
-        }
+function buildGrid() {
+    toDraw = [];
+    for (var i = 0; i < 6; i++) {
+        for (var j = 0; j < 6; j++)
+            toDraw.push({ x: i * 200, y: j * 200, w: outpost_width, h: outpost_height, color: "#" + (i) + "0" + j + "000" })
     }
 }
-function distance(x1, x2, y1, y2) {
-    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-}
-*/
 
+
+  
